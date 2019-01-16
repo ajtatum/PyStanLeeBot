@@ -1,0 +1,15 @@
+{
+  "name": "StanLeeBot",
+  "scripts": {
+  },
+  "env": {
+  },
+  "formation": {
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+
+  ]
+}
