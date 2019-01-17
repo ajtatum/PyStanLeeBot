@@ -35,4 +35,4 @@ def test():
     return j['items'][0]['title']
 
 if __name__ == '__main__':
-    app.run(debug=os.getenv('Debug', default=True)) #run app in debug mode on port 5000
+    app.run() #run app in debug mode on port 5000
