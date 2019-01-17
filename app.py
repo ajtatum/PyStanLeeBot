@@ -3,7 +3,7 @@ import urllib.request
 import os, sys, json, jsonpickle
 from Models.SlackRequest import SlackRequest
 
-SLACK_API_TOKEN = os.getenv('SLACK_API_TOKEN')
+SLACK_STANLEE_API_TOKEN = os.getenv('SLACK_STANLEE_API_TOKEN')
 GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
 GOOGLE_CSE_ID=os.getenv('GOOGLE_CSE_ID')
 
