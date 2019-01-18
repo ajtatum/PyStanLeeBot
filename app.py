@@ -24,7 +24,7 @@ def slack():
     sr.ChannelId = request.form.get('channel_id')
     sr.UserName = request.form.get('user_name')
     sr.UserId = request.form.get('user_id')
-    sr.Text = request.form.get('text')
+    sr.Text = urllib.parse.quote(request.form.get('text'))
 
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(GOOGLE_CSE_ID, GOOGLE_API_KEY, sr.Text)
 
