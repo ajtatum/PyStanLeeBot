@@ -4,9 +4,10 @@ import os, sys, json, jsonpickle
 from slackclient import SlackClient
 from Models.SlackRequest import SlackRequest
 
+DEBUG = os.getenv('DEGUG')
 SLACK_STANLEE_API_TOKEN = os.getenv('SLACK_STANLEE_API_TOKEN')
-GOOGLE_API_KEY=os.getenv('GOOGLE_API_KEY')
-GOOGLE_CSE_ID=os.getenv('GOOGLE_CSE_ID')
+GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
+GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
 
 slack_client = SlackClient(SLACK_STANLEE_API_TOKEN)
 
@@ -38,8 +39,9 @@ def slack():
     slack_client.api_call(
         "chat.postMessage",
         channel=sr.ChannelId,
-        text="{}\n{}".format(j['items'][0]['title'],j['items'][0]['link']),
-        unfurl_links="true"
+        attachments=formatJsonResponse(j),
+        unfurl_links=True,
+        unfurl_media=True
     )
 
     return Response(), 200
@@ -63,7 +65,35 @@ def test():
 
     j = json.loads(res_body.decode("utf-8"))
 
-    return j['items'][0]['title']
+    #testMessage = formatResponse(j)
+    #testMessage = "<br />".join(testMessage.split("\n"))
+
+    return jsonpickle.encode(formatJsonResponse(j))
+
+def formatTextResponse(j):
+    return "*{}*\n{}\n{}\n{}".format(
+                            j['items'][0]['pagemap']['metatags'][0]['twitter:image:alt'],
+                            j['items'][0]['link'],
+                            j['items'][0]['pagemap']['metatags'][0]['og:description'],
+                            j['items'][0]['pagemap']['metatags'][0]['og:image']),
+
+def formatJsonResponse(j):
+    attachments = [
+            {
+                "fallback": j['items'][0]['pagemap']['metatags'][0]['og:description'],
+                "color": "#ff2526",
+                "author_name": "Stan Lee Bot",
+                "author_link": "https://github.com/ajtatum/PyStanLeeBot",
+                "text": j['items'][0]['pagemap']['metatags'][0]['og:description'],
+                "title": j['items'][0]['pagemap']['metatags'][0]['twitter:image:alt'],
+                "title_link": j['items'][0]['link'],
+                "image_url": j['items'][0]['pagemap']['metatags'][0]['og:image'],
+                "footer": "Marvel",
+                "footer_icon": "https://www.marvel.com/static/images/favicon/mstile-150x150.png",
+            }
+        ]
+
+    return attachments
 
 if __name__ == '__main__':
-    app.run(debug=True) #run app in debug mode on port 5000
+    app.run(debug=DEBUG) #run app in debug mode on port 5000
