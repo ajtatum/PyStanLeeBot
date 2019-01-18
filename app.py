@@ -38,7 +38,8 @@ def slack():
     slack_client.api_call(
         "chat.postMessage",
         channel=sr.ChannelId,
-        text=j['items'][0]['link']
+        text=j['items'][0]['link'],
+        unfurl_links=True
     )
 
     return Response(), 200
