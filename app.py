@@ -72,7 +72,7 @@ def test():
 
 def formatTextResponse(j):
     return "*{}*\n{}\n{}\n{}".format(
-                            j['items'][0]['pagemap']['metatags'][0]['og:title'],
+                            j['items'][0]['title'],
                             j['items'][0]['link'],
                             j['items'][0]['pagemap']['metatags'][0]['og:description'],
                             j['items'][0]['pagemap']['metatags'][0]['og:image']),
@@ -85,7 +85,7 @@ def formatJsonResponse(j):
                 "author_name": "Stan Lee Bot",
                 "author_link": "https://github.com/ajtatum/PyStanLeeBot",
                 "text": j['items'][0]['pagemap']['metatags'][0]['og:description'],
-                "title": j['items'][0]['pagemap']['metatags'][0]['og:title'],
+                "title": j['items'][0]['title'],
                 "title_link": j['items'][0]['link'],
                 "image_url": j['items'][0]['pagemap']['metatags'][0]['og:image'],
                 "footer": "Marvel",
