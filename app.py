@@ -74,17 +74,17 @@ def formatTextResponse(j):
     return "*{}*\n{}\n{}\n{}".format(
                             j['items'][0]['title'],
                             j['items'][0]['link'],
-                            j['items'][0]['pagemap']['metatags'][0]['og:description'],
+                            j['items'][0]['snippet'].replace('\n',''),
                             j['items'][0]['pagemap']['metatags'][0]['og:image']),
 
 def formatJsonResponse(j):
     attachments = [
             {
-                "fallback": j['items'][0]['pagemap']['metatags'][0]['og:description'],
+                "fallback": j['items'][0]['snippet'].replace('\n',''),
                 "color": "#ff2526",
                 "author_name": "Stan Lee Bot",
                 "author_link": "https://github.com/ajtatum/PyStanLeeBot",
-                "text": j['items'][0]['pagemap']['metatags'][0]['og:description'],
+                "text": j['items'][0]['snippet'].replace('\n',''),
                 "title": j['items'][0]['title'],
                 "title_link": j['items'][0]['link'],
                 "image_url": j['items'][0]['pagemap']['metatags'][0]['og:image'],
@@ -96,4 +96,4 @@ def formatJsonResponse(j):
     return attachments
 
 if __name__ == '__main__':
-    app.run(debug=DEBUG) #run app in debug mode on port 5000
+    app.run(debug=True) #run app in debug mode on port 5000
