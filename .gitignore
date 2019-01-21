@@ -4,6 +4,7 @@
 
 ### CUSTOM ###
 config_local.json
+logs/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

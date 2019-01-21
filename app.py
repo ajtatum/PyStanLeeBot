@@ -1,10 +1,11 @@
+import os, sys, json, logging, jsonpickle, urllib.request
 from flask import Flask, request, Response, jsonify #import main Flask class and request object
-import urllib.request
-import os, sys, json, jsonpickle
+from logging.handlers import RotatingFileHandler
 from slackclient import SlackClient
 from Models.SlackRequest import SlackRequest
+from Models.SlackQueryResponse import SlackQueryResponse
 
-DEBUG = os.getenv('DEGUG')
+DEBUG = os.getenv('DEGUG', default=True)
 SLACK_STANLEE_API_TOKEN = os.getenv('SLACK_STANLEE_API_TOKEN')
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 GOOGLE_CSE_ID = os.getenv('GOOGLE_CSE_ID')
@@ -29,17 +30,20 @@ def slack():
 
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(GOOGLE_CSE_ID, GOOGLE_API_KEY, sr.Text)
 
-    print(url)
+    app.logger.info("Url Requested: {}".format(url))
 
     res = urllib.request.urlopen(url)
     res_body = res.read()
 
     j = json.loads(res_body.decode("utf-8"))
+    
+    sqr = SlackQueryResponse()
+    sqr.FromJson(j)
 
     slack_client.api_call(
         "chat.postMessage",
         channel=sr.ChannelId,
-        attachments=formatJsonResponse(j),
+        attachments=sqr.ToJson(),
         unfurl_links=True,
         unfurl_media=True
     )
@@ -58,42 +62,30 @@ def test():
 
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(GOOGLE_CSE_ID, GOOGLE_API_KEY, sr.Text)
 
-    print(url)
+    app.logger.info("Url Requested: {}".format(url))
 
     res = urllib.request.urlopen(url)
     res_body = res.read()
 
     j = json.loads(res_body.decode("utf-8"))
 
-    #testMessage = formatResponse(j)
-    #testMessage = "<br />".join(testMessage.split("\n"))
+    sqr = SlackQueryResponse()
+    sqr.FromJson(j)
 
-    return jsonpickle.encode(formatJsonResponse(j))
+    resp = Response(response=jsonpickle.encode(sqr.ToJson()),
+                    status=200,
+                    mimetype="application/json")
 
-def formatTextResponse(j):
-    return "*{}*\n{}\n{}\n{}".format(
-                            j['items'][0]['title'],
-                            j['items'][0]['link'],
-                            j['items'][0]['snippet'].replace('\n',''),
-                            j['items'][0]['pagemap']['metatags'][0]['og:image']),
-
-def formatJsonResponse(j):
-    attachments = [
-            {
-                "fallback": j['items'][0]['snippet'].replace('\n',''),
-                "color": "#ff2526",
-                "author_name": "Stan Lee Bot",
-                "author_link": "https://github.com/ajtatum/PyStanLeeBot",
-                "text": j['items'][0]['snippet'].replace('\n',''),
-                "title": j['items'][0]['title'],
-                "title_link": j['items'][0]['link'],
-                "image_url": j['items'][0]['pagemap']['metatags'][0]['og:image'],
-                "footer": "Marvel",
-                "footer_icon": "https://www.marvel.com/static/images/favicon/mstile-150x150.png",
-            }
-        ]
-
-    return attachments
+    return resp
 
 if __name__ == '__main__':
-    app.run(debug=True) #run app in debug mode on port 5000
+    formatter = logging.Formatter( "%(asctime)s | %(pathname)s:%(lineno)d | %(funcName)s | %(levelname)s | %(message)s ")
+    handler = RotatingFileHandler('logs/StanLeeBotApp.log', maxBytes=10000, backupCount=5)
+    handler.setLevel(logging.DEBUG)
+    handler.setFormatter(formatter)
+
+    app.logger.addHandler(handler)
+    app.logger.addHandler(logging.StreamHandler(stream=sys.stdout))
+    app.logger.setLevel(logging.DEBUG)
+
+    app.run(debug=DEBUG) #run app in debug mode on port 5000
