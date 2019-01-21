@@ -30,7 +30,7 @@ def slack():
 
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(GOOGLE_CSE_ID, GOOGLE_API_KEY, sr.Text)
 
-    app.logger.info("Url Requested: {}".format(url))
+    app.logger.debug("Url Requested: {}".format(url))
 
     res = urllib.request.urlopen(url)
     res_body = res.read()
@@ -62,7 +62,7 @@ def test():
 
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(GOOGLE_CSE_ID, GOOGLE_API_KEY, sr.Text)
 
-    app.logger.info("Url Requested: {}".format(url))
+    app.logger.debug("Url Requested: {}".format(url))
 
     res = urllib.request.urlopen(url)
     res_body = res.read()
@@ -77,6 +77,11 @@ def test():
                     mimetype="application/json")
 
     return resp
+
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 
 if __name__ == '__main__':
     formatter = logging.Formatter( "%(asctime)s | %(pathname)s:%(lineno)d | %(funcName)s | %(levelname)s | %(message)s ")
