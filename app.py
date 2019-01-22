@@ -48,14 +48,11 @@ def test():
     sr.UserId = request.args.get('user_id')
     sr.Text = urllib.parse.quote(request.args.get('text'))
 
-    if sr.Text.startswith("giphy"):
-        return "<h1>Giphy</h1>"
-    else:
-        resp = Response(response=jsonpickle.encode(GetMarvelSlackResponseJson(sr)),
-                        status=200,
-                        mimetype="application/json")
+    resp = Response(response=jsonpickle.encode(GetMarvelSlackResponseJson(sr)),
+                    status=200,
+                    mimetype="application/json")
 
-        return resp
+    return resp
 
 def GetMarvelSlackResponseJson(sr):
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(GOOGLE_CSE_ID, GOOGLE_API_KEY, sr.Text)
