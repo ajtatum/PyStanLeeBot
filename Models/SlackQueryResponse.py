@@ -26,10 +26,11 @@ class SlackQueryResponse(object):
             self.image_url = json['items'][0]['pagemap']['metatags'][0]['og:image']
         else:
             self.fallback = "Unable to find anything about: {}".format(search_term)
-            self.text = "Ut oh!"
-            self.title = self.fallback
+            self.text = self.fallback
+            self.title = "Ut oh!"
             self.title_link = "https://www.marvel.com/"
-            self.image_url = self.footer_icon
+            self.footer = ""
+            self.footer_icon = ""
 
     def ToText(self):
         return "*{}*\n{}\n{}\n{}".format(
