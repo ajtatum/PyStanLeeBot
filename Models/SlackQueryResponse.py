@@ -8,8 +8,8 @@ class SlackQueryResponse(object):
     title=""
     title_link=""
     image_url=""
-    footer="Marvel"
-    footer_icon="https://www.marvel.com/static/images/favicon/mstile-150x150.png"
+    footer=""
+    footer_icon="https://raw.githubusercontent.com/ajtatum/PyStanLeeBot/master/assets/images/boom-icon.jpg"
 
     def __init__(self):
         pass
@@ -24,11 +24,12 @@ class SlackQueryResponse(object):
             self.title = json['items'][0]['title'],
             self.title_link = json['items'][0]['link'],
             self.image_url = json['items'][0]['pagemap']['cse_image'][0]['src']
+            self.footer = json['context']['title']
         else:
             self.fallback = "Unable to find anything about: {}".format(search_term)
             self.text = self.fallback
             self.title = "Ut oh!"
-            self.title_link = "https://www.marvel.com/"
+            self.title_link = self.author_link
             self.footer = ""
             self.footer_icon = ""
 
