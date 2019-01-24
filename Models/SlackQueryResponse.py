@@ -23,7 +23,7 @@ class SlackQueryResponse(object):
             self.text = json['items'][0]['snippet'].replace('\n',''),
             self.title = json['items'][0]['title'],
             self.title_link = json['items'][0]['link'],
-            self.image_url = json['items'][0]['pagemap']['metatags'][0]['og:image']
+            self.image_url = json['items'][0]['pagemap']['cse_image'][0]['src']
         else:
             self.fallback = "Unable to find anything about: {}".format(search_term)
             self.text = self.fallback
