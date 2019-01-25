@@ -36,7 +36,7 @@ def SlackMarvel():
         attachments=GetGoogleSearchSlackResponseJson(sr, MARVEL_GOOGLE_CSE_ID),
         unfurl_links=True,
         unfurl_media=True,
-        as_user=False
+        as_user=True
     )
 
     return Response(), 200
@@ -102,6 +102,7 @@ def TestDCComics():
 def GetGoogleSearchSlackResponseJson(sr, cse):
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(cse, GOOGLE_API_KEY, sr.Text)
 
+    app.logger.debug(jsonpickle.encode(sr))
     app.logger.debug("Url Requested: {}".format(url))
 
     res = urllib.request.urlopen(url)
@@ -124,7 +125,7 @@ if __name__ == '__main__':
     handler.setLevel(logging.DEBUG)
     handler.setFormatter(formatter)
 
-    app.logger.addHandler(handler)
+    #app.logger.addHandler(handler)
     app.logger.addHandler(logging.StreamHandler(stream=sys.stdout))
     app.logger.setLevel(logging.DEBUG)
 
