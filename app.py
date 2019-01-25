@@ -35,7 +35,8 @@ def SlackMarvel():
         channel=sr.ChannelId,
         attachments=GetGoogleSearchSlackResponseJson(sr, MARVEL_GOOGLE_CSE_ID),
         unfurl_links=True,
-        unfurl_media=True
+        unfurl_media=True,
+        as_user=False
     )
 
     return Response(), 200
