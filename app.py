@@ -22,13 +22,7 @@ def home():
 
 @app.route('/slack-marvel', methods=['POST'])
 def SlackMarvel():
-
-    sr = SlackRequest()
-    sr.ChannelName = request.form.get('channel_name')
-    sr.ChannelId = request.form.get('channel_id')
-    sr.UserName = request.form.get('user_name')
-    sr.UserId = request.form.get('user_id')
-    sr.Text = urllib.parse.quote(request.form.get('text'))
+    sr = GetSlackResponse(request.form)
 
     slack_client.api_call(
         "chat.postMessage",
@@ -43,20 +37,15 @@ def SlackMarvel():
 
 @app.route('/slack-dc', methods=['POST'])
 def SlackDCComics():
-
-    sr = SlackRequest()
-    sr.ChannelName = request.form.get('channel_name')
-    sr.ChannelId = request.form.get('channel_id')
-    sr.UserName = request.form.get('user_name')
-    sr.UserId = request.form.get('user_id')
-    sr.Text = urllib.parse.quote(request.form.get('text'))
+    sr = GetSlackResponse(request.form)
 
     slack_client.api_call(
         "chat.postMessage",
         channel=sr.ChannelId,
         attachments=GetGoogleSearchSlackResponseJson(sr, DC_COMICS_GOOGLE_CSE_ID),
         unfurl_links=True,
-        unfurl_media=True
+        unfurl_media=True,
+        as_user=True
     )
 
     return Response(), 200
@@ -65,12 +54,7 @@ def SlackDCComics():
 def TestMarvel():
     authKey = request.args.get('auth_key')
     if TEST_AUTH_KEY == authKey:
-        sr = SlackRequest()
-        sr.ChannelName = request.args.get('channel_name')
-        sr.ChannelId = request.args.get('channel_id')
-        sr.UserName = request.args.get('user_name')
-        sr.UserId = request.args.get('user_id')
-        sr.Text = urllib.parse.quote(request.args.get('text'))
+        sr = GetSlackResponse(request.args)
 
         resp = Response(response=jsonpickle.encode(GetGoogleSearchSlackResponseJson(sr, MARVEL_GOOGLE_CSE_ID)),
                         status=200,
@@ -84,12 +68,7 @@ def TestMarvel():
 def TestDCComics():
     authKey = request.args.get('auth_key')
     if TEST_AUTH_KEY == authKey:
-        sr = SlackRequest()
-        sr.ChannelName = request.args.get('channel_name')
-        sr.ChannelId = request.args.get('channel_id')
-        sr.UserName = request.args.get('user_name')
-        sr.UserId = request.args.get('user_id')
-        sr.Text = urllib.parse.quote(request.args.get('text'))
+        sr = GetSlackResponse(request.args)
 
         resp = Response(response=jsonpickle.encode(GetGoogleSearchSlackResponseJson(sr, DC_COMICS_GOOGLE_CSE_ID)),
                         status=200,
@@ -98,6 +77,19 @@ def TestDCComics():
         return resp
     else:
         return Response(), 403
+
+def GetSlackResponse(req):
+    sr = SlackRequest()
+    sr.Command = req.get('command')
+    sr.ChannelName = req.get('channel_name')
+    sr.ChannelId = req.get('channel_id')
+    sr.UserName = req.get('user_name')
+    sr.UserId = req.get('user_id')
+    sr.Text = urllib.parse.quote(req.get('text'))
+    sr.ResponseUrl = req.get('response_url')
+    sr.TriggerId = req.get('trigger_id')
+
+    return sr
 
 def GetGoogleSearchSlackResponseJson(sr, cse):
     url = "https://www.googleapis.com/customsearch/v1?cx={}&key={}&q={}".format(cse, GOOGLE_API_KEY, sr.Text)

@@ -5,6 +5,9 @@ class SlackRequest(object):
     UserName=None
     UserId=None
     Text=None
+    Command=None
+    ResponseUrl=None
+    TriggerId=None
 
     def __init__(self, channelName, channelId, userName, userId, text):
         self.ChannelName = channelName
