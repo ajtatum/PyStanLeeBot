@@ -20,6 +20,16 @@ app = Flask(__name__) #create the Flask app
 def home():
     return "<h1>StanLeeBot</h1>"
 
+@app.route('/slack-marvel-response', methods=['POST'])
+def SlackMarvelResponse():
+    sr = GetSlackResponse(request.form)
+
+    resp = Response(response=jsonpickle.encode(GetGoogleSearchSlackResponseJson(sr, MARVEL_GOOGLE_CSE_ID)),
+                        status=200,
+                        mimetype="application/json")
+
+    return resp
+
 @app.route('/slack-marvel', methods=['POST'])
 def SlackMarvel():
     sr = GetSlackResponse(request.form)
